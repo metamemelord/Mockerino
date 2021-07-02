@@ -1,0 +1,10 @@
+[package]
+name = "mockerino"
+version = "0.1.0"
+authors = ["metamemelord <hello@gauravsaini.dev>"]
+edition = "2018"
+
+
+[dependencies]
+serde = "1.0"
+serde_yaml = "0.8"
