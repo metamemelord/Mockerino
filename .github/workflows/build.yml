@@ -1,0 +1,27 @@
+name: Rust
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PAT }}
+    - name: Build
+      run: cargo build --verbose
+    - name: Run clippy checks
+      run: cargo clippy --verbose
+    - name: Run tests
+      run: cargo test --verbose
