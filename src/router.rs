@@ -105,7 +105,7 @@ fn get_file_handler(
                         let mut response = Response::new(body);
                         *response.headers_mut() = response_headers;
                         *response.status_mut() = status_code;
-                        return Ok(response);
+                        Ok(response)
                     } else {
                         log::error!("File not found \"{}\"", file_path);
                         panic!();

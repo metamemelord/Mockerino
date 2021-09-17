@@ -1,8 +1,8 @@
 use crate::request::RequestWithMetadata;
-use hyper::{Body, Request, Response};
-use tokio_util::codec::{BytesCodec, FramedRead};
 use anyhow::anyhow;
+use hyper::{Body, Request, Response};
 use tokio::fs::File;
+use tokio_util::codec::{BytesCodec, FramedRead};
 
 pub async fn file_as_body(filename: &str) -> Result<Body, anyhow::Error> {
     // Serve a file by asynchronously reading it by chunks using tokio-util crate.
@@ -13,5 +13,4 @@ pub async fn file_as_body(filename: &str) -> Result<Body, anyhow::Error> {
         return Ok(body);
     }
     Err(anyhow!("Failed"))
-
 }

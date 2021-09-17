@@ -11,7 +11,7 @@ lazy_static! {
 }
 
 pub fn parse(base: &str) -> Result<Vec<RequestWithMetadata>> {
-    let base = base.trim_end_matches("/");
+    let base = base.trim_end_matches('/');
     log::info!("Looking for spec files in base dir '{}'", base);
 
     let base_dir = WalkDir::new(base);
@@ -40,14 +40,15 @@ fn process_file(base: &str, path: &str) -> Result<Vec<RequestWithMetadata>> {
         .trim_end_matches(".yaml")
         .trim_end_matches(".yml")
         .trim_end_matches("/root")
-        .trim_end_matches("/")
+        .trim_end_matches('/')
         .to_owned();
-    request_path.push_str("/");
+    request_path.push('/');
 
     let endpoint = parse_yaml_file(path)?;
 
     // Handle dynamic routes here
-    if let Some(_) = PATH_PARAM_REGEX.find(request_path.as_ref()) {
+    if PATH_PARAM_REGEX.find(request_path.as_ref()).is_some() {
+        // TODO: Add capability to use dynamic routes.
         process_dynamic_path(endpoint, request_path.as_ref())
     } else {
         Ok(endpoint
