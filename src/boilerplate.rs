@@ -1,8 +1,5 @@
 use anyhow::Result;
-use log;
-use reqwest;
 use std::io::Write;
-use tokio;
 
 static BOILERPLATE_SOURCE_BASE: &str =
     "https://raw.githubusercontent.com/metamemelord/Mockerino/main/boilerplate";

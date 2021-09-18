@@ -6,7 +6,7 @@ use std::str::FromStr;
 pub fn init(cfg: Option<&Config>) -> Result<()> {
     let log_level = {
         match cfg {
-            Some(ref c) => c.log_level(),
+            Some(c) => c.log_level(),
             None => "INFO",
         }
     };

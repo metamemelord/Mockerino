@@ -57,14 +57,17 @@ fn get_raw_body_handler(
 ) -> Pin<Box<dyn Future<Output = Result<Response<Body>, anyhow::Error>> + Send + Sync>> {
     let response_headers: hyper::header::HeaderMap = headers
         .iter()
-        .filter_map(|(k, v)| {
-            hyper::header::HeaderName::from_str(k).ok().and_then(|k| {
-                hyper::header::HeaderValue::from_str(v)
-                    .ok()
-                    .and_then(|v| Some((k, v)))
-            })
+        .map(|(k, v)| {
+            (
+                hyper::header::HeaderName::from_str(k).ok(),
+                hyper::header::HeaderValue::from_str(v).ok(),
+            )
         })
-        .collect();
+        .filter(|(k, v)| (k.is_some() && v.is_some()))
+        .fold(hyper::HeaderMap::new(), |mut m, (k, v)| {
+            m.insert(k.unwrap(), v.unwrap()).unwrap();
+            m
+        });
 
     let status_code = hyper::StatusCode::from_u16(status_code.unwrap_or(200)).unwrap_or_default();
 

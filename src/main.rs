@@ -44,15 +44,10 @@ fn main() -> Result<()> {
     let app_name = app.get_name().to_owned();
     let app_matches = app.get_matches();
 
-    if let Some(cmd) = app_matches.subcommand_name() {
-        match cmd {
-            "init" => {
-                logger::init(None)?;
-                boilerplate::init()?;
-                std::process::exit(0);
-            }
-            _ => (),
-        }
+    if let Some("init") = app_matches.subcommand_name() {
+        logger::init(None)?;
+        boilerplate::init()?;
+        std::process::exit(0);
     }
 
     let cfg = {
