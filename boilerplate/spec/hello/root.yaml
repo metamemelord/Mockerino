@@ -11,4 +11,4 @@ spec:
       raw_body: >
         Hello! We see you discovered how to write a root spec file!<br>
         Click <a href="/hello/world">here</a> to see a json file served by the engine.<br>
-        Psst! Did you know the server slept for 250ms? Read the spec file!
+        Psst! Did you notice the server slept for 250ms? It's configurable! Read the spec file!
