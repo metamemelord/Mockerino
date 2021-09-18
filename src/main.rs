@@ -26,8 +26,8 @@ use clap::{clap_app, crate_authors, crate_version};
 use hyper::server::Server;
 use std::net::SocketAddr;
 
-pub fn init_app<'a, 'b>() -> Result<clap::App<'a, 'b>> {
-    Ok(clap_app!(
+pub fn init_app<'a, 'b>() -> Result<clap::App<'a, 'b>>{
+  Ok(clap_app!(
       Mockerino =>
       (version: crate_version!())
       (about: "A YAML based REST API mocking engine.")
@@ -39,33 +39,33 @@ pub fn init_app<'a, 'b>() -> Result<clap::App<'a, 'b>> {
     ))
 }
 
-fn main() -> Result<()> {
-    let app = init_app()?;
-    let app_name = app.get_name().to_owned();
-    let app_matches = app.get_matches();
+fn main() -> Result<()>{
+  let app = init_app()?;
+  let app_name = app.get_name().to_owned();
+  let app_matches = app.get_matches();
 
-    if let Some("init") = app_matches.subcommand_name() {
+  if let Some("init") = app_matches.subcommand_name() {
         logger::init(None)?;
         boilerplate::init()?;
         std::process::exit(0);
     }
 
-    let cfg = {
+  let cfg = {
         match app_matches.value_of("config") {
             Some(ref v) => config::Config::from_path(v)?,
             None => config::Config::default()?,
         }
     };
 
-    logger::init(Option::from(&cfg))?;
+  logger::init(Option::from(&cfg))?;
 
-    log::info!("{} v{}", app_name, clap::crate_version!());
+  log::info!("{} v{}", app_name, clap::crate_version!());
 
-    let routes = spec_parser::parse(cfg.base_dir())?;
+  let routes = spec_parser::parse(cfg.base_dir())?;
 
-    let service = router::get_service(routes)?;
+  let service = router::get_service(routes)?;
 
-    let rt = tokio::runtime::Builder::new_multi_thread()
+  let rt = tokio::runtime::Builder::new_multi_thread()
         .thread_name("Mockerino thread")
         .worker_threads(cfg.max_threads().into())
         .enable_all()
@@ -76,11 +76,11 @@ fn main() -> Result<()> {
             log::debug!("Stopped a thread");
         })
         .build()?;
-    let addr = SocketAddr::from(([0, 0, 0, 0], cfg.port()));
-    let _guard = rt.enter();
+  let addr = SocketAddr::from(([0, 0, 0, 0], cfg.port()));
+  let _guard = rt.enter();
 
-    log::info!("Starting on port {}", cfg.port());
+  log::info!("Starting on port {}", cfg.port());
 
-    rt.block_on(Server::bind(&addr).serve(service))
+  rt.block_on(Server::bind(&addr).serve(service))
         .map_err(|e| e.into())
 }

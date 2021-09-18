@@ -44,43 +44,50 @@ impl Config {
 
 #[cfg(test)]
 mod tests {
-    use super::Config;
+  use super::Config;
     use anyhow::Result;
     use std::io::Write;
 
-    #[test]
+  #[test]
     #[should_panic]
-    fn test_default_without_file() {
-        let _: Config = Config::default().unwrap();
-    }
+  fn test_default_without_file(
+  )
+  {
+    let _: Config = Config::default().unwrap();
+  }
 
-    #[test]
-    fn test_default() {
-        let file_data = r#"port: 8080
+  #[test]
+  fn test_default(
+  )
+  {
+    let file_data = r#"port: 8080
 max_threads: 2
 log_level: DEBUG
 base_dir: files"#;
-        let _ = set_file(
+    let _ = set_file(
             std::env::current_dir().unwrap().join("config.yaml"),
             file_data.as_bytes().iter().map(|&x| x).collect(),
         );
 
-        let _config: Config = Config::default().unwrap();
+    let _config: Config = Config::default().unwrap();
 
-        let _ = clean_file(std::env::current_dir().unwrap().join("config.yaml"));
-    }
+    let _ = clean_file(std::env::current_dir().unwrap().join("config.yaml"));
+  }
 
-    #[test]
-    fn test_load_config() {}
+  #[test]
+  fn test_load_config(
+  )
+  {
+  }
 
-    fn set_file<T: AsRef<std::path::Path>>(s: T, data: Vec<u8>) -> Result<()> {
-        let mut file = std::fs::File::create(s)?;
-        file.write(&data)?;
-        Ok(())
-    }
+  fn set_file<T: AsRef<std::path::Path>>(s: T, data: Vec<u8>) -> Result<()>{
+    let mut file = std::fs::File::create(s)?;
+    file.write(&data)?;
+    Ok(())
+  }
 
-    fn clean_file<T: AsRef<std::path::Path>>(s: T) -> Result<()> {
-        let _ = std::fs::remove_file(s)?;
-        Ok(())
-    }
+  fn clean_file<T: AsRef<std::path::Path>>(s: T) -> Result<()>{
+    let _ = std::fs::remove_file(s)?;
+    Ok(())
+  }
 }

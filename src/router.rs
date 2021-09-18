@@ -64,10 +64,8 @@ fn get_raw_body_handler(
             )
         })
         .filter(|(k, v)| (k.is_some() && v.is_some()))
-        .fold(hyper::HeaderMap::new(), |mut m, (k, v)| {
-            m.insert(k.unwrap(), v.unwrap()).unwrap();
-            m
-        });
+        .map(|(k, v)| (k.unwrap(), v.unwrap()))
+        .collect();
 
     let status_code = hyper::StatusCode::from_u16(status_code.unwrap_or(200)).unwrap_or_default();
 
