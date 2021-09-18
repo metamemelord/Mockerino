@@ -1,0 +1,4 @@
+port: 8080
+max_threads: 2
+log_level: DEBUG
+base_dir: files/spec/
