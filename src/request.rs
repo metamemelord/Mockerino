@@ -48,6 +48,10 @@ impl RequestWithMetadata {
     pub fn file(&self) -> Option<String> {
         self.inner.file.clone()
     }
+
+    pub fn sleep(&self) -> u64 {
+        self.inner.sleep.unwrap_or_default()
+    }
 }
 
 lazy_static::lazy_static! {}

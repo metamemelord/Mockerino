@@ -5,7 +5,7 @@ use std::io::Write;
 use tokio;
 
 static BOILERPLATE_SOURCE_BASE: &str =
-    "https://raw.githubusercontent.com/metamemelord/Mockerino/feature/core/boilerplate";
+    "https://raw.githubusercontent.com/metamemelord/Mockerino/main/boilerplate";
 
 pub fn init() -> Result<()> {
     log::info!("Initializing the spec and config in current directory");
@@ -15,19 +15,22 @@ pub fn init() -> Result<()> {
     std::fs::create_dir_all("spec/hello")?;
     std::fs::create_dir_all("data")?;
 
-    let files = vec!["config.yaml", "spec/root.yaml", "spec/hello/root.yaml", "spec/hello/world.yaml", "data/hello-world.json"];
+    let files = vec![
+        "config.yaml",
+        "spec/root.yaml",
+        "spec/hello/root.yaml",
+        "spec/hello/world.yaml",
+        "data/hello-world.json",
+    ];
     let rt = tokio::runtime::Runtime::new()?;
     rt.block_on(async {
-      for file in files {
-        if let Err(e) = download_file(file).await {
-          log::error!("Error downloading spec file '{}': {}", file, e);
+        for file in files {
+            if let Err(e) = download_file(file).await {
+                log::error!("Error downloading spec file '{}': {}", file, e);
+            }
         }
-      }
     });
-
-    log::info!("Writing config file at './config.yaml'");
-    log::info!("Creating spec directory at './spec'");
-    log::info!("Creting data directoru './config.yaml'");
+    log::info!("Done! Run mockerino to start the engine.");
     Ok(())
 }
 
@@ -39,6 +42,6 @@ async fn download_file(file_path: &str) -> Result<()> {
     let mut file = std::fs::File::create(&path)?;
     let content = response.text().await?;
     file.write_all(content.as_bytes())?;
-    log::info!("Downloaded boilerplate code at '{}'", file_path);
+    log::debug!("Downloaded boilerplate code at '{}'", file_path);
     Ok(())
 }

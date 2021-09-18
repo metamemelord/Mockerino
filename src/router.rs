@@ -23,14 +23,20 @@ fn add_routes(
     for route in routes.iter() {
         log::info!("{} {}", route.method(), route.path());
         if let Some(raw_b) = route.raw_body() {
-            let handler = get_raw_body_handler(raw_b, route.headers(), route.status_code());
+            let handler =
+                get_raw_body_handler(raw_b, route.headers(), route.status_code(), route.sleep());
             router = router.add(
                 route.path(),
                 vec![hyper::Method::from_str(route.method())?],
                 handler,
             );
         } else if let Some(file_path) = route.file() {
-            let handler = get_file_handler(file_path, route.headers(), route.status_code());
+            let handler = get_file_handler(
+                file_path,
+                route.headers(),
+                route.status_code(),
+                route.sleep(),
+            );
             router = router.add(
                 route.path(),
                 vec![hyper::Method::from_str(route.method())?],
@@ -45,16 +51,17 @@ fn get_raw_body_handler(
     raw_body: String,
     headers: HashMap<String, String>,
     status_code: Option<u16>,
+    sleep: u64,
 ) -> impl Fn(
     Request<Body>,
 ) -> Pin<Box<dyn Future<Output = Result<Response<Body>, anyhow::Error>> + Send + Sync>> {
     let response_headers: hyper::header::HeaderMap = headers
         .iter()
         .filter_map(|(k, v)| {
-            hyper::header::HeaderName::from_str(k).ok()
-                .and_then(|k| {
-                    hyper::header::HeaderValue::from_str(v).ok()
-                        .and_then(|v| Some((k, v)))
+            hyper::header::HeaderName::from_str(k).ok().and_then(|k| {
+                hyper::header::HeaderValue::from_str(v)
+                    .ok()
+                    .and_then(|v| Some((k, v)))
             })
         })
         .collect();
@@ -64,19 +71,25 @@ fn get_raw_body_handler(
     move |_: Request<Body>| -> Pin<Box<dyn Future<Output = Result<Response<Body>, anyhow::Error>> + Send + Sync>> {
       let response_headers = response_headers.clone();
       let raw_body = raw_body.clone();
-  Box::pin(async move {
-    let mut response = Response::new(Body::from(raw_body));
-    *response.status_mut() = status_code;
-    *response.headers_mut() = response_headers;
-    Ok(response)
-  })
-  }
+      Box::pin(async move {
+        if sleep > 0 {
+          log::debug!("Sleeping for {}ms", sleep);
+          tokio::time::sleep(std::time::Duration::from_millis(sleep)).await;
+        }
+
+        let mut response = Response::new(Body::from(raw_body));
+        *response.status_mut() = status_code;
+        *response.headers_mut() = response_headers;
+        Ok(response)
+      })
+    }
 }
 
 fn get_file_handler(
     file_path: String,
     headers: HashMap<String, String>,
     status_code: Option<u16>,
+    sleep: u64,
 ) -> impl Fn(
     Request<Body>,
 ) -> Pin<Box<dyn Future<Output = Result<Response<Body>, anyhow::Error>> + Send + Sync>> {
@@ -99,15 +112,20 @@ fn get_file_handler(
                 let file_path = file_path.clone();
                 Box::pin(async move {
                     if let Ok(file) = tokio::fs::File::open(file_path.clone()).await {
-                        let stream = FramedRead::new(file, BytesCodec::new());
-                        let body = Body::wrap_stream(stream);
-                        let mut response = Response::new(body);
-                        *response.headers_mut() = response_headers;
-                        *response.status_mut() = status_code;
-                        Ok(response)
+                      if sleep > 0 {
+                        log::info!("Sleeping for {}ms", sleep);
+                        tokio::time::sleep(std::time::Duration::from_millis(sleep)).await;
+                      }
+
+                      let stream = FramedRead::new(file, BytesCodec::new());
+                      let body = Body::wrap_stream(stream);
+                      let mut response = Response::new(body);
+                      *response.headers_mut() = response_headers;
+                      *response.status_mut() = status_code;
+                      Ok(response)
                     } else {
-                        log::error!("File not found \"{}\"", file_path);
-                        panic!();
+                      log::error!("File not found \"{}\"", file_path);
+                      panic!();
                     }
                 })
             }
