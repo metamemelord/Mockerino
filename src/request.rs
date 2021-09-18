@@ -4,11 +4,11 @@ use std::collections::HashMap;
 pub struct Request {
     description: String,
     method: String,
-    headers: HashMap<String, String>,
+    headers: Option<HashMap<String, String>>,
     raw_body: Option<String>,
     status_code: Option<u16>,
     file: Option<String>,
-    sleep: u64,
+    sleep: Option<u64>,
 }
 
 #[derive(Debug, Clone)]
@@ -38,7 +38,7 @@ impl RequestWithMetadata {
     }
 
     pub fn headers(&self) -> HashMap<String, String> {
-        self.inner.headers.clone()
+        self.inner.headers.clone().unwrap_or_default()
     }
 
     pub fn raw_body(&self) -> Option<String> {

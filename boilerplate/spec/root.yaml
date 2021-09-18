@@ -1,0 +1,15 @@
+apiVersion: mocks/v1
+kind: MockEndpoint
+spec:
+  requests:
+    - description: Returning the homepage of Mockerino
+      method: GET
+      sleep: 0
+      status_code: 200
+      headers:
+        content-type: text/html
+      raw_body: >
+        Hello! Welcome to Mockerino!<br>Click <a href="/hello">here</a> to see how root.yaml serves the path root.
+    - description: A post request which says "OK"
+      method: POST
+      raw_body: OK

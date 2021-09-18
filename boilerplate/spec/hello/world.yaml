@@ -1,0 +1,10 @@
+apiVersion: mocks/v1
+kind: MockEndpoint
+spec:
+  requests:
+    - description: Serve static files by providing paths!
+      method: GET
+      file: data/hello-world.json
+      headers:
+        content-type: application/json
+

@@ -73,7 +73,7 @@ fn process_dynamic_path(
 fn parse_yaml_file(path: &str) -> Result<Endpoint> {
     let file = std::fs::File::open(path)?;
     serde_yaml::from_reader(file).map_err(|e| {
-        log::warn!("Ignored invalid spec file '{}'", path);
+        log::warn!("Error reading file '{}': {}", path, e);
         e.into()
     })
 }

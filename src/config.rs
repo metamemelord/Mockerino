@@ -26,6 +26,7 @@ impl Config {
     }
 
     pub fn default() -> Result<Self> {
+        println!("[WARN] No config provided, looking for config in './config.yaml'");
         let config_file_path = std::env::current_dir()?.join("config.yaml");
         let config_file = std::fs::File::open(config_file_path)?;
         Self::load_config(config_file)

@@ -1,0 +1,13 @@
+apiVersion: mocks/v1
+kind: MockEndpoint
+spec:
+  requests:
+    - description: I serve the path /hello
+      method: GET
+      sleep: 0
+      status_code: 200
+      headers:
+        content-type: text/html
+      raw_body: >
+        Hello! We see you discovered how to write a root spec file!<br>
+        Click <a href="/hello/world">here</a> to see a json file served by the engine.
