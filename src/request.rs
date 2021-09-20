@@ -53,5 +53,3 @@ impl RequestWithMetadata {
         self.inner.sleep.unwrap_or_default()
     }
 }
-
-lazy_static::lazy_static! {}
