@@ -19,4 +19,8 @@ impl Endpoint {
     pub fn request(&self) -> &Vec<Request> {
         &self.spec.requests
     }
+
+    pub fn kind(&self) -> String {
+      self.kind.clone()
+    }
 }

@@ -1,5 +1,5 @@
-apiVersion: mocks/v1
-kind: MockEndpoint
+apiVersion: apps/v1
+kind: Endpoint
 spec:
   requests:
     - description: Returning the homepage of Mockerino

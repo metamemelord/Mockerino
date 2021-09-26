@@ -46,16 +46,21 @@ fn process_file(
 
     let endpoint = parse_yaml_file(path)?;
 
-    // Handle dynamic routes here
-    if path_param_regex.find(request_path.as_ref()).is_some() {
-        // TODO: Add capability to use dynamic routes.
-        process_dynamic_path(endpoint, request_path.as_ref())
-    } else {
-        Ok(endpoint
-            .request()
-            .iter()
-            .map(|req| RequestWithMetadata::new(req.clone(), request_path.to_string()))
-            .collect())
+    match endpoint.kind().as_ref() {
+        "Endpoint" => {
+            // Handle dynamic routes here
+            if path_param_regex.find(request_path.as_ref()).is_some() {
+                // TODO: Add capability to use dynamic routes.
+                process_dynamic_path(endpoint, request_path.as_ref())
+            } else {
+                Ok(endpoint
+                    .request()
+                    .iter()
+                    .map(|req| RequestWithMetadata::new(req.clone(), request_path.to_string()))
+                    .collect())
+            }
+        }
+        _ => Err(anyhow::Error::msg("Unsupported 'kind' in spec file")),
     }
 }
 
