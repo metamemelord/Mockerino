@@ -35,11 +35,12 @@ fn process_file(
     path: &str,
     path_param_regex: Rc<Regex>,
 ) -> Result<Vec<RequestWithMetadata>> {
+    let os_root_file_path = format!("{}root", std::path::MAIN_SEPARATOR);
     let mut request_path = path
         .trim_start_matches(base)
         .trim_end_matches(".yaml")
         .trim_end_matches(".yml")
-        .trim_end_matches("/root")
+        .trim_end_matches(&os_root_file_path)
         .trim_end_matches('/')
         .to_owned();
     request_path.push('/');
