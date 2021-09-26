@@ -1,6 +1,6 @@
 [package]
 name = "mockerino"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Gaurav Saini <hello@gauravsaini.dev>"]
 edition = "2018"
 
