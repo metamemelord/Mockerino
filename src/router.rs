@@ -23,7 +23,9 @@ fn add_routes(
     routes: Vec<RequestWithMetadata>,
 ) -> Result<RouterBuilder<Body, anyhow::Error>> {
     for route in routes.iter() {
-        log::info!("{} {}", route.method(), route.path());
+        let request_path = standardize_request_path(route.path());
+
+        log::info!("{} {}", route.method(), request_path);
 
         let response_headers: HeaderMap = route
             .headers()
@@ -47,14 +49,14 @@ fn add_routes(
         if let Some(raw_b) = route.raw_body() {
             let handler = get_raw_body_handler(raw_b, response_headers, status_code, route.sleep());
             router = router.add(
-                route.path(),
+                request_path,
                 vec![hyper::Method::from_str(route.method())?],
                 handler,
             );
         } else if let Some(file_path) = route.file() {
             let handler = get_file_handler(file_path, response_headers, status_code, route.sleep());
             router = router.add(
-                route.path(),
+                request_path,
                 vec![hyper::Method::from_str(route.method())?],
                 handler,
             );
@@ -123,4 +125,12 @@ fn get_file_handler(
 async fn logging_middleware(req: Request<Body>) -> Result<Request<Body>, anyhow::Error> {
     log::debug!("{} {}", req.method(), req.uri().path());
     Ok(req)
+}
+
+fn standardize_request_path(src_path: &str) -> String {
+    src_path
+        .split(std::path::MAIN_SEPARATOR)
+        .map(|s| s.to_owned())
+        .collect::<Vec<String>>()
+        .join("/")
 }

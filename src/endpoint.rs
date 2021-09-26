@@ -21,6 +21,6 @@ impl Endpoint {
     }
 
     pub fn kind(&self) -> String {
-      self.kind.clone()
+        self.kind.clone()
     }
 }
